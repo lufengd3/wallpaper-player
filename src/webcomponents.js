@@ -6,6 +6,7 @@ import {
   fluentSelect,
   fluentOption,
   fluentTextField,
+  fluentButton,
 } from '@fluentui/web-components';
 
 provideFluentDesignSystem()
@@ -16,4 +17,5 @@ provideFluentDesignSystem()
     fluentSelect(),
     fluentOption(),
     fluentTextField(),
+    fluentButton(),
   );

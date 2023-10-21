@@ -1,14 +1,14 @@
 import { invoke } from '@tauri-apps/api';
 import { SettingStorage, SETTING_KEYS} from './storage';
 
-export async function updateWallpaper(imgUrl) {
+export async function updateWallpaper(imgUrl, shareType = '') {
   return invoke('update_wallpaper', {
     // url: 'https://img.alicdn.com/imgextra/i2/1993922459/TB2SyrclmMmBKNjSZTEXXasKpXa_!!1993922459.jpg_430x430q90.jpg'
     url: imgUrl,
     base64Img: '',
+    shareType
   })
 }
-
 class WPUtils {
   constructor() {
     this.localImagesStr = localStorage.getItem('imgs');

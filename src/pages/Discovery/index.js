@@ -31,7 +31,7 @@ function openWindow(name, url) {
     const webview = new tauriWindow.WebviewWindow(name, {
       url,
       width: 900,
-      title: 'wp',
+      title: name || url,
       center: true,
     });
   }
@@ -51,7 +51,7 @@ export default function() {
       const windowLabel = domain.replace(/\./g, '');
       openWindow(windowLabel, url);
     } else if (text) {
-      const searchWindowLabel = 'unsplashsearch';
+      const searchWindowLabel = 'unsplash_search';
       const searchWindow = tauriWindow.WebviewWindow.getByLabel(searchWindowLabel);
       if (searchWindow) {
         searchWindow.close();

@@ -84,6 +84,7 @@
     var COPY = '123892x003';
     var MENU_WIDTH = '120px';
     var IMG_INFO_DOM_ID = '_wpContextMenuImgSize';
+    var CTX_MENU_BODY_ID = '_wpContextMenuBody';
     var ContextMenu = (function () {
         function ContextMenu() {
             var _this = this;
@@ -91,12 +92,12 @@
                 var contextMenu = document.createElement('div');
                 contextMenu.setAttribute('class', '_wpContextMenuContainer');
                 contextMenu.addEventListener('click', _this.handleMenuClick);
-                contextMenu.innerHTML = "\n    <ul class=\"_wpContextMenuBody\">\n      <li id=\"".concat(IMG_INFO_DOM_ID, "\"></li>\n      <li data-action=\"").concat(SET_WP, "\">\u8BBE\u4E3A\u58C1\u7EB8</li>\n      <li data-action=\"").concat(ADD_TO_QUEUE, "\">\u52A0\u5165\u4E0B\u8F7D\u961F\u5217</li>\n      <li data-action=\"").concat(COPY, "\">\u590D\u5236\u56FE\u7247 URL</li>\n    </ul>\n    ");
+                contextMenu.innerHTML = "\n    <ul id=\"".concat(CTX_MENU_BODY_ID, "\">\n      <li data-action=\"").concat(SET_WP, "\">\u8BBE\u4E3A\u58C1\u7EB8</li>\n      <li data-action=\"").concat(ADD_TO_QUEUE, "\">\u52A0\u5165\u4E0B\u8F7D\u961F\u5217</li>\n      <li data-action=\"").concat(COPY, "\">\u590D\u5236\u56FE\u7247 URL</li>\n    </ul>\n    ");
                 document.body.appendChild(contextMenu);
                 return contextMenu;
             };
             this.appendCss = function () {
-                var contextMenuCss = "\n      ._wpContextMenuContainer {\n        width: 100vw;\n        height: 100vh;\n        position: fixed;\n        top: 0;\n        left: 0;\n        z-index: 9999999;\n        display: none;\n      }\n      ._wpContextMenuBody {\n        padding: 0 10px;\n        background-color: #f4f4f4;\n        color: #333;\n        box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);\n        width: ".concat(MENU_WIDTH, ";\n        display: inline-flex;\n        flex-direction: column;\n        position: absolute;\n      }\n\n      #").concat(IMG_INFO_DOM_ID, " {\n        color: #999;\n      }\n\n      #").concat(IMG_INFO_DOM_ID, ":hover {\n        cursor: context-menu;\n        font-weight: normal;\n      }\n\n      ._wpContextMenuBody li {\n        height: 40px;\n        line-height: 40px;\n        text-align: left;\n        list-style: none;\n      }\n      \n      ._wpContextMenuBody li:hover {\n        cursor: pointer;\n        font-weight: bold;\n      }\n      \n      ._wpContextMenuBody li:not(:last-child) {\n        border-bottom: 0.5px solid rgba(200, 200, 200, 0.5);\n      }\n\n      ._wpContextMenuBody li:hover {\n        cursor: pointer;\n      }\n    ");
+                var contextMenuCss = "\n      ._wpContextMenuContainer {\n        width: 100vw;\n        height: 100vh;\n        position: fixed;\n        top: 0;\n        left: 0;\n        z-index: 9999999;\n        display: none;\n      }\n      #".concat(CTX_MENU_BODY_ID, " {\n        padding: 0 10px;\n        background-color: #f4f4f4;\n        color: #333;\n        box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);\n        width: ").concat(MENU_WIDTH, ";\n        display: inline-flex;\n        flex-direction: column;\n        position: absolute;\n      }\n\n      #").concat(IMG_INFO_DOM_ID, " {\n        color: #999;\n      }\n\n      #").concat(IMG_INFO_DOM_ID, ":hover {\n        cursor: context-menu;\n        font-weight: normal;\n      }\n\n      #").concat(CTX_MENU_BODY_ID, " li {\n        height: 40px;\n        line-height: 40px;\n        text-align: left;\n        list-style: none;\n      }\n      \n      #").concat(CTX_MENU_BODY_ID, " li:hover {\n        cursor: pointer;\n        font-weight: bold;\n      }\n      \n      #").concat(CTX_MENU_BODY_ID, " li:not(:last-child) {\n        border-bottom: 0.5px solid rgba(200, 200, 200, 0.5);\n      }\n\n      #").concat(CTX_MENU_BODY_ID, " li:hover {\n        cursor: pointer;\n      }\n    ");
                 var wpHhostStyle = document.createElement('style');
                 wpHhostStyle.innerHTML = contextMenuCss;
                 document.head.appendChild(wpHhostStyle);
@@ -124,7 +125,7 @@
                         }
                     }
                 });
-                document.querySelector('._wpContextMenuBody').addEventListener('click', function (e) {
+                document.getElementById(CTX_MENU_BODY_ID).addEventListener('click', function (e) {
                     var dataset = e.target.dataset;
                     switch (dataset.action) {
                         case SET_WP:
@@ -160,11 +161,14 @@
                 }
                 _this.currentUrl = url.replace(/&(h|height)=\d+/g, '').replace(/&(w|width)=\d+/g, '');
                 _this.showMenu(e.clientX, e.clientY);
-                var imgInfoDom = document.getElementById(IMG_INFO_DOM_ID);
-                if (imgInfoDom) {
+                var menuBody = document.getElementById(CTX_MENU_BODY_ID);
+                if (menuBody && !/unsplash\.com/.test(location.host)) {
                     var img = e.target;
                     var _a = img.naturalWidth, naturalWidth = _a === void 0 ? 0 : _a, _b = img.naturalHeight, naturalHeight = _b === void 0 ? 0 : _b;
-                    imgInfoDom.textContent = naturalWidth ? "".concat(naturalWidth, " x ").concat(naturalHeight) : 'Unknow';
+                    var imgInfoElm = document.createElement('li');
+                    imgInfoElm.setAttribute('id', IMG_INFO_DOM_ID);
+                    imgInfoElm.textContent = naturalWidth ? "".concat(naturalWidth, " x ").concat(naturalHeight) : 'Unknow';
+                    menuBody.insertBefore(imgInfoElm, menuBody.firstChild);
                 }
                 return _this.currentUrl;
             };
@@ -179,7 +183,7 @@
             };
             this.showMenu = function (x, y) {
                 _this.dom.style.display = 'block';
-                var menuBody = document.querySelector('._wpContextMenuBody');
+                var menuBody = document.getElementById(CTX_MENU_BODY_ID);
                 var menuWidth = parseInt(MENU_WIDTH);
                 var menuHeight = 125;
                 var docWidth = document.documentElement.offsetWidth;

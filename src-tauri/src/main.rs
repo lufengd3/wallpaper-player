@@ -1,9 +1,12 @@
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use std::{error, string, sync::Mutex};
+use std::sync::{
+  Arc, Mutex
+};
+use std::collections::HashMap;
 
 use tauri::Manager;
 use tauri::SystemTray;
@@ -19,7 +22,11 @@ pub struct AppState {
   pub my_app_data_dir: PathBuf,
   pub config_file: PathBuf,
   pub win: Option<tauri::Window>,
+  pub autoshare: bool,
 }
+
+#[derive(Default)]
+pub struct RuntimeSwitches(Arc<Mutex<HashMap<String, bool>>>);
 
 fn main() {
   let ctx = tauri::generate_context!();
@@ -30,7 +37,8 @@ fn main() {
   let mut state = AppState {
     my_app_data_dir: app_data_dir.clone(),
     config_file:  app_data_dir.join("appconf"),
-    win: None
+    win: None,
+    autoshare: false,
   };
   fs::create_dir_all(app_data_dir).unwrap();
 
@@ -50,6 +58,7 @@ fn main() {
       app.manage(state);
       Ok(())
     })
+    .manage(RuntimeSwitches(Default::default()))
     .system_tray(system_tray)
     .on_system_tray_event(|app, event| match event {
       // SystemTrayEvent::LeftClick {
@@ -97,7 +106,7 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![wp::update_wallpaper, wp::get_wallpaper, wp::download_wallpaper, commands::db::save2db])
+    .invoke_handler(tauri::generate_handler![wp::update_wallpaper, wp::get_wallpaper, wp::download_wallpaper, wp::update_autoshare_state])
     .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--autostart"])))
     .run(ctx)
     .expect("error while running tauri application");

@@ -1,4 +1,6 @@
 ## 功能介绍
+任意网站，一键设置壁纸
+
 ![](./assets/Screenshot-main.jpg)
 ![](./assets/Screenshot-rightclick.jpg)
 ![](./assets/Screenshot-rightclick2.jpg)

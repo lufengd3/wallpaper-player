@@ -1,0 +1,37 @@
+.gallery {
+  /* display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px; */
+}
+
+.header {
+  width: 100%;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-icon {
+  width: 30px;
+  cursor: pointer;
+}
+
+.selected {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.messageBar {
+  color: #333;
+  text-align: center;
+  margin-top: 200px;
+}
+
+.actionText {
+  color: red;
+  font-weight: bold;
+}

@@ -20,6 +20,7 @@ export default ({ children }) => {
         <div className='nav-container'>
           <NavLink to="/" style={style} className="link-item">发现</NavLink>
           <NavLink to="/playlist" style={style} className="link-item">图库</NavLink>
+          <NavLink to="/group" style={style} className="link-item">群组</NavLink>
           <NavLink to="/setting" style={style} className="link-item">设置</NavLink>
         </div>
       </div>

@@ -3,6 +3,7 @@ const SET_WP = '12798371231';
 const COPY = '123892x003';
 const MENU_WIDTH = '120px';
 const IMG_INFO_DOM_ID = '_wpContextMenuImgSize';
+const CTX_MENU_BODY_ID = '_wpContextMenuBody';
 
 export default class ContextMenu {
   dom: HTMLElement;
@@ -21,8 +22,7 @@ export default class ContextMenu {
     contextMenu.addEventListener('click', this.handleMenuClick);
    
     contextMenu.innerHTML = `
-    <ul class="_wpContextMenuBody">
-      <li id="${IMG_INFO_DOM_ID}"></li>
+    <ul id="${CTX_MENU_BODY_ID}">
       <li data-action="${SET_WP}">设为壁纸</li>
       <li data-action="${ADD_TO_QUEUE}">加入下载队列</li>
       <li data-action="${COPY}">复制图片 URL</li>
@@ -44,7 +44,7 @@ export default class ContextMenu {
         z-index: 9999999;
         display: none;
       }
-      ._wpContextMenuBody {
+      #${CTX_MENU_BODY_ID} {
         padding: 0 10px;
         background-color: #f4f4f4;
         color: #333;
@@ -64,23 +64,23 @@ export default class ContextMenu {
         font-weight: normal;
       }
 
-      ._wpContextMenuBody li {
+      #${CTX_MENU_BODY_ID} li {
         height: 40px;
         line-height: 40px;
         text-align: left;
         list-style: none;
       }
       
-      ._wpContextMenuBody li:hover {
+      #${CTX_MENU_BODY_ID} li:hover {
         cursor: pointer;
         font-weight: bold;
       }
       
-      ._wpContextMenuBody li:not(:last-child) {
+      #${CTX_MENU_BODY_ID} li:not(:last-child) {
         border-bottom: 0.5px solid rgba(200, 200, 200, 0.5);
       }
 
-      ._wpContextMenuBody li:hover {
+      #${CTX_MENU_BODY_ID} li:hover {
         cursor: pointer;
       }
     `;
@@ -120,7 +120,7 @@ export default class ContextMenu {
       }
     });
 
-    document.querySelector('._wpContextMenuBody').addEventListener('click', (e: PointerEvent) => {
+    document.getElementById(CTX_MENU_BODY_ID).addEventListener('click', (e: PointerEvent) => {
       const { dataset } = e.target as HTMLImageElement;
       switch (dataset.action) {
         case SET_WP:
@@ -161,12 +161,16 @@ export default class ContextMenu {
     
     this.currentUrl = url.replace(/&(h|height)=\d+/g, '').replace(/&(w|width)=\d+/g, '');
     this.showMenu(e.clientX, e.clientY);
-    const imgInfoDom = document.getElementById(IMG_INFO_DOM_ID);
-    if (imgInfoDom) {
+    
+    const menuBody =  document.getElementById(CTX_MENU_BODY_ID);
+    if (menuBody && !/unsplash\.com/.test(location.host)) {
       const img = e.target as HTMLImageElement;
       const {naturalWidth = 0, naturalHeight = 0} = img;
-      imgInfoDom.textContent = naturalWidth ? `${naturalWidth} x ${naturalHeight}` : 'Unknow';
-    } 
+      const imgInfoElm = document.createElement('li');
+      imgInfoElm.setAttribute('id', IMG_INFO_DOM_ID);
+      imgInfoElm.textContent = naturalWidth ? `${naturalWidth} x ${naturalHeight}` : 'Unknow';
+      menuBody.insertBefore(imgInfoElm, menuBody.firstChild);
+    }
 
     return this.currentUrl;
   }
@@ -185,7 +189,7 @@ export default class ContextMenu {
   showMenu = (x: number, y: number) => {
     this.dom.style.display = 'block';
 
-    const menuBody = document.querySelector('._wpContextMenuBody');
+    const menuBody = document.getElementById(CTX_MENU_BODY_ID);
     const menuWidth = parseInt(MENU_WIDTH);
     const menuHeight = 125;
     const docWidth = document.documentElement.offsetWidth;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dialog, shell } from '@tauri-apps/api';
+import { dialog, shell, invoke } from '@tauri-apps/api';
 import * as autostart from './autostart';
 import { SettingStorage, SETTING_KEYS } from '../../utils/storage';
 import styles from './index.module.css';
@@ -14,6 +14,7 @@ autostart.isEnabled().then(res => {
 export default function() {
   const [folder, setFolder] = useState(SettingStorage.get(SETTING_KEYS.imgFolder) || '');
   const [loopCycle, setLoopCycle] = useState(SettingStorage.get(SETTING_KEYS.loopCycle) || '');
+  const [autoShareState, setAutoShareState] = useState(SettingStorage.get(SETTING_KEYS.autoShare) || false);
   const [autoStartState, setAutoStartState] = useState(initialAutoStartState);
   useEffect(() => {
     autostart.isEnabled().then(res => {
@@ -68,6 +69,18 @@ export default function() {
     });
   }
 
+  function handleAutoShare(e) {
+    const nextState = e.target.checked;
+    SettingStorage.set(SETTING_KEYS.autoShare, nextState)
+    .then(() => {
+      invoke('update_autoshare_state', {
+        nextState
+      })
+    }).catch(e => {
+      alert(e.message || e);
+    })
+  }
+
   return (
     <div className='setting-container'>
       <fluent-card class={styles.settingItem}>
@@ -95,12 +108,17 @@ export default function() {
         <div>开机启动</div>
         <fluent-switch checked={autoStartState} onClick={handleAutoStart} />
       </fluent-card>
+
+      <fluent-card class={styles.settingItem}>
+        <div>自动分享：下载壁纸时自动分享到群组</div>
+        <fluent-switch checked={autoShareState} onClick={handleAutoShare} />
+      </fluent-card>
       
       <fluent-card class={styles.settingItem}>
-        <div>Help</div>
+        <div>帮助</div>
         <div>
-          <a target='_blank' href="">
-          
+          <a target='_blank' href="https://github.com/lufengd3/wallpaper-player">
+            https://github.com/lufengd3/wallpaper-player
           </a>
         </div>
       </fluent-card>

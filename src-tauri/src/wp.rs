@@ -5,6 +5,7 @@ use std::env;
 use std::path::PathBuf;
 use std::error::Error;
 use std::io::Cursor as StdCursor;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use image;
 use image::io::Reader as ImageReader;
 use serde::{Serialize, Deserialize};
@@ -14,7 +15,10 @@ use serde_json;
 use base64;
 
 use crate::AppState;
+use crate::RuntimeSwitches;
 // use crate::utils::config::get_config_by_key;
+
+static AUTO_SHARE_CONFIG_KEY: &str = "auto_share";
 
 #[derive(Deserialize, Debug)]
 struct AppConfObj {
@@ -27,7 +31,7 @@ struct WpChangedPayload {
 }
 
 #[tauri::command(async)]
-pub async fn update_wallpaper(app_state: tauri::State<'_, AppState>, url: String, base64_img:Option<String>, share_type: Option<String>) -> Result<bool, bool> {
+pub async fn update_wallpaper(app_state: tauri::State<'_, AppState>, runtime_switches: tauri::State<'_, RuntimeSwitches>, url: String, base64_img:Option<String>, share_type: Option<String>) -> Result<bool, bool> {
   let wallpaper_file_path: String;
   let remote_wallpaper = url.contains("http://") || url.contains("https://");
 
@@ -58,6 +62,21 @@ pub async fn update_wallpaper(app_state: tauri::State<'_, AppState>, url: String
           .emit("backend:wpchanged", WpChangedPayload {
             filepath: wallpaper_file_path
           });
+        
+        if remote_wallpaper {
+          match share_type {
+            Some(value) if value == "donotshare" => {
+            }
+            _ => {
+              if let Some(val) = runtime_switches.0.lock().unwrap().get(AUTO_SHARE_CONFIG_KEY).cloned() {
+                println!("auto share switches {:?}", val);
+                if val == true {
+                  save2cloud(&url);
+                }
+              }
+            }
+          }
+        }
 
         Ok(true)
       },
@@ -103,6 +122,24 @@ pub fn get_wallpaper(app_state: tauri::State<AppState>) -> String {
   return wallpaper_path;
 }
 
+#[tauri::command]
+pub fn update_autoshare_state(runtime_switches: tauri::State<'_, RuntimeSwitches>, next_state: bool) -> Option<bool> {
+  runtime_switches.0.lock().unwrap().insert(AUTO_SHARE_CONFIG_KEY.to_string(), next_state);
+
+  let auto_share_state = runtime_switches.0.lock().unwrap().get(AUTO_SHARE_CONFIG_KEY).cloned();
+  
+  // match auto_share_state {
+  //   Some(true) => {
+  //     Ok(true)
+  //   },
+  //   _ => {
+  //     Ok(false)
+  //   }
+  // }
+
+  return auto_share_state;
+}
+
 async fn download_img(url: &str, img_folder: PathBuf, base64_img: Option<String>) -> Result<String, Box<dyn Error>> {
     println!("downloading... {} \n", url);
     let random_str = get_epoch_ms().to_string();
@@ -117,15 +154,16 @@ async fn download_img(url: &str, img_folder: PathBuf, base64_img: Option<String>
         base64_val = if parts[1].is_empty() { parts[0].clone() } else { parts[1].clone() };
       }
       _ => {
-        println!("base64 undefined");
         base64_val = String::from("");
       }
     }
 
     let img_bin_data;
     if !base64_val.is_empty() {
+      println!("decode base64 data");
       img_bin_data = base64::decode(base64_val).unwrap();
     } else {
+      println!("base64 undefined download from remote");
       let res = reqwest::get(url).await?.bytes().await?;
       img_bin_data = res.as_ref().to_vec();
     }
@@ -167,3 +205,20 @@ struct WpBody {
   url: String,
 }
 
+fn save2cloud(url: &str) {
+  let api = "https://wall-paper.online/wp/addimg";
+  println!("api {} \n", api);
+
+  let p = WpBody {
+    url: url.to_string()
+  };
+
+  tauri::async_runtime::spawn(async move {
+    let res = reqwest::Client::new()
+        .post(api)
+        .json(&p)
+        .send()
+        .await;
+    println!("res is {:?}", res);
+  });
+}
