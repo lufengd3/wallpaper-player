@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import RemoteImg from './RemoteImg';
 import { SettingStorage, SETTING_KEYS } from '../../utils/storage';
 import { getImgs } from '../../utils/api';
+import Loading from '../../components/Loading';
 import styles from './index.module.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       return;
     }
 
+    Loading.show();
     getImgs()
       .then((data) => {
         console.log(data);
@@ -24,7 +26,7 @@ function App() {
         }
       }).catch(e => {
         alert(e.message);
-      });
+      }).finally(Loading.hide)
   }, []);
 
   return (

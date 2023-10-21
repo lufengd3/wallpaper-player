@@ -39,7 +39,12 @@ function App() {
     if (imgFolder) {
       fs.readDir(imgFolder)
         .then((res = []) => {
-          const localImgaes = res.filter(item => /\.(jpg|png|jpeg)$/i.test(item.name)).reverse();
+          const localImgaes = res.filter(item => /\.(jpg|png|jpeg)$/i.test(item.name))
+            .sort((a, b) => {
+              const timeA = a.name.slice(0, a.name.indexOf('.'));
+              const timeB = b.name.slice(0, b.name.indexOf('.'));
+              return timeB - timeA;
+            });
 
           setImgs(localImgaes);
           wpUtils.IMG_CACHE = localImgaes;
