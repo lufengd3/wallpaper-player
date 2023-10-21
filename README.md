@@ -1,5 +1,7 @@
 ## 功能介绍
-任意网站，一键设置壁纸
+基于 Tauri 开发的壁纸小软件（12 MB），*任意网站，一键设置壁纸*
+
+下载: https://github.com/lufengd3/wallpaper-player/releases/tag/0.1.0
 
 ![](./assets/Screenshot-main.jpg)
 ![](./assets/Screenshot-rightclick.jpg)

@@ -25,3 +25,5 @@ yarn-error.log*
 imgdb
 src/config.js
 db
+
+bundle*
