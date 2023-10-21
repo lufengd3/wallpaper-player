@@ -1,0 +1,35 @@
+:global(.setting-container) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.settingItem {
+  width: 80%;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  contain: none;
+  content-visibility: visible;
+}
+
+.folderSelectorContainer {
+  width: 250px;
+  height: 32px;
+  position: relative;
+}
+
+.folderSelectorContainer:hover {
+  cursor: pointer;
+}
+
+.folderIcon {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}

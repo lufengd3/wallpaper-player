@@ -1,0 +1,61 @@
+.footerContainer {
+  background-color: #fefefe;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  border-top: 1px solid #e6e6e6;
+  height: 60px;
+}
+
+.footerChild {
+  flex: 1;
+}
+
+.left {
+  composes: footerChild;
+}
+
+.previewImg {
+  width: 80px;
+  height: 45px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.center {
+  composes: footerChild;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+}
+
+.icon:hover {
+  cursor: pointer;
+}
+
+.controlIcon {
+  composes: icon;
+  width: 18px;
+  height: 18px;
+}
+
+.playIcon {
+  composes: icon;
+  width: 32px;
+  height: 32px;
+  margin: 0 12px;
+}
+
+.right {
+  composes: footerChild;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rightIcon {
+  composes: icon;
+}

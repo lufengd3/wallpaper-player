@@ -1,0 +1,39 @@
+{
+  "name": "wp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fluentui/react": "^8.105.6",
+    "@fluentui/web-components": "^2.5.8",
+    "cra-template": "1.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.0.2",
+    "react-scripts": "4.0.3",
+    "recoil": "^0.5.1"
+  },
+  "scripts": {
+    "gui": "npm run tauri dev",
+    "tbuild": "npm run tauri build",
+    "tauri": "tauri",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "@tauri-apps/api": "1.2.0",
+    "@tauri-apps/cli": "1.2.0"
+  }
+}

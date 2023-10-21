@@ -1,0 +1,6 @@
+-- Your SQL goes here
+CREATE TABLE app_conf (
+  id INTEGER NOT NULL PRIMARY KEY,
+  key VARCHAR NOT NULL,
+  value TEXT NOT NULL DEFAULT ''
+);

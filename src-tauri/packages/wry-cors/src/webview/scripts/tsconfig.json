@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es5",  
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": true,
+    "experimentalDecorators": true, 
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "types": [],
+  }
+}
