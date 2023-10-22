@@ -7,7 +7,7 @@
 ![](./assets/Screenshot-rightclick.jpg)
 ![](./assets/Screenshot-rightclick2.jpg)
 ![](./assets/Screenshot-playlist.jpg)
-![](./assets/Screenshot-setting.jpg)
+![](./assets/Screenshot-settings.jpg)
 
 ### Dev
 ### Pre Install
