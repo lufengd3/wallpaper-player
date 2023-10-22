@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { invoke, fs, window as tauriWindow } from '@tauri-apps/api';
 import SiteIcon from './site-icon';
-import { SITES_INFO } from './conf';
+import { useSites } from './useSites';
 import './index.css';
 
 function updateWp(imgUrl) {
@@ -40,6 +40,8 @@ function openWindow(name, url) {
 const SEARCH_PLACEHOLDER = '使用图片关键词搜索，或输入网址';
 
 export default function() {
+  const sites = useSites();
+
   function handleSearch(e) {
     const text = e.target.value;
     if(e.key !== 'Enter' || !text) return;
@@ -75,7 +77,7 @@ export default function() {
       <input className="search" type="text" placeholder={SEARCH_PLACEHOLDER} onKeyDown={handleSearch} />
       <div className='site-container'>
         <ul onClick={handleSiteClick}>
-          {SITES_INFO.map((item, index) => {
+          {sites.map((item, index) => {
             return <li className="site-item" key={index} data-url={item.url} data-name={item.name}>
               <div className='favicon-container'> 
                 <SiteIcon data={item} />

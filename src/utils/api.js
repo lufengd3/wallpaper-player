@@ -12,3 +12,16 @@ export function getImgs() {
     }
   })
 }
+
+export function getSites() {
+  const apiUrl = `${BASE_URL}/recsites`;
+  return fetch(apiUrl, {
+    method: 'POST',
+    mode: 'cors',
+    referrerPolicy: "no-referrer"
+  }).then(response => {
+    if (response.status === 200) {
+      return response.json();
+    }
+  })
+}

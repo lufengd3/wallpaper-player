@@ -52,6 +52,10 @@
         return BaseComponent;
     }());
 
+    var BACK_BTN_ZINDEX = 999999;
+    var PREVIEW_IFRAME_ZINDEX = BACK_BTN_ZINDEX - 1;
+    var PREVIEW_IFRAME_ID = "_wp__preview_iframe";
+
     var BackBtn = (function (_super) {
         __extends(BackBtn, _super);
         function BackBtn() {
@@ -60,7 +64,7 @@
         BackBtn.prototype.renderDOM = function () {
             var backBtn = document.createElement('div');
             backBtn.setAttribute('class', '_wpBackBtn');
-            var backBtnCss = "\n      ._wpBackBtn {\n        width: 40px;\n        height: 40px;\n        position: fixed;\n        bottom: 20px;\n        left: 20px;\n        z-index: 99999;\n        border: 2px solid #2424;\n        border-radius: 40px;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n      }\n      ._wpBackBtn:hover { \n        background-color: #3db4e7; \n        border-color: #fff !important; \n        cursor: pointer \n      }\n    ";
+            var backBtnCss = "\n      ._wpBackBtn {\n        width: 40px;\n        height: 40px;\n        position: fixed;\n        bottom: 20px;\n        left: 20px;\n        z-index: ".concat(BACK_BTN_ZINDEX, ";\n        border: 2px solid #2424;\n        border-radius: 40px;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n      }\n      ._wpBackBtn:hover { \n        background-color: #3db4e7; \n        border-color: #fff !important; \n        cursor: pointer \n      }\n    ");
             var backArrow = document.createElement('div');
             backArrow.setAttribute('class', '_wpBackArrow');
             var backArrowCss = "\n      ._wpBackArrow {\n        width: 16px;\n        height: 16px;\n        margin-left: 6px;\n        border-width: 2px;\n        border-color: inherit;\n        border-style: solid;\n        border-right: 0;\n        border-bottom: 0;\n        transform: rotate(-45deg);\n      }\n    ";
@@ -73,7 +77,13 @@
         };
         BackBtn.prototype.addEventListener = function () {
             this.dom.addEventListener('click', function () {
-                history.back();
+                var previewIframe = document.getElementById(PREVIEW_IFRAME_ID);
+                if (previewIframe) {
+                    previewIframe.remove();
+                }
+                else {
+                    history.back();
+                }
             });
         };
         return BackBtn;
@@ -194,6 +204,8 @@
                 menuBody.style.top = top + 'px';
             };
             this.hideMenu = function () {
+                var imgInfoElm = document.getElementById(IMG_INFO_DOM_ID);
+                imgInfoElm && imgInfoElm.remove();
                 _this.dom.style.display = 'none';
             };
             this.setWallpaper = function () {
@@ -230,7 +242,33 @@
 
     var processTagA = (function () {
         var processAnchor = function (a) {
-            a.setAttribute('target', '');
+            a.removeAttribute('target');
+            if (/cdn.wallpaperhub.app/i.test(a.search)) {
+                var params = new URLSearchParams(a.search);
+                var imgUrl_1 = params.get('url');
+                if (imgUrl_1) {
+                    a.removeAttribute('href');
+                    a.onmouseover = function () {
+                        a.style.cursor = 'pointer';
+                    };
+                    a.onmouseout = function () {
+                        a.style.cursor = '';
+                    };
+                    a.onclick = function () {
+                        var imgIframe = document.createElement('ifarme');
+                        var htmlContent = "\n                    <!DOCTYPE html>\n                        <body>\n                            <img src=\"".concat(imgUrl_1, "\" style=\"width: 100%;\" />\n                        </body>\n                    </html>\n                ");
+                        imgIframe.innerHTML = htmlContent;
+                        imgIframe.setAttribute('id', PREVIEW_IFRAME_ID);
+                        imgIframe.style.width = '100vw';
+                        imgIframe.style.height = '100vh';
+                        imgIframe.style.position = 'fixed';
+                        imgIframe.style.zIndex = PREVIEW_IFRAME_ZINDEX;
+                        imgIframe.style.top = 0;
+                        imgIframe.style.left = 0;
+                        document.body.appendChild(imgIframe);
+                    };
+                }
+            }
         };
         var insertedObserver = new MutationObserver(function (mutations) {
             mutations.forEach(function (m) {

@@ -201,6 +201,8 @@ export default class ContextMenu {
   }
 
   hideMenu = () => {
+    const imgInfoElm = document.getElementById(IMG_INFO_DOM_ID);
+    imgInfoElm && imgInfoElm.remove();
     this.dom.style.display = 'none';
   }
 

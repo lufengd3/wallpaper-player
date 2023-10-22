@@ -1,4 +1,5 @@
 import BaseComponent from "./BaseComponent";
+import { BACK_BTN_ZINDEX, PREVIEW_IFRAME_ID } from './constants';
 
 export default class BackBtn extends BaseComponent {
   constructor() {
@@ -15,7 +16,7 @@ export default class BackBtn extends BaseComponent {
         position: fixed;
         bottom: 20px;
         left: 20px;
-        z-index: 99999;
+        z-index: ${BACK_BTN_ZINDEX};
         border: 2px solid #2424;
         border-radius: 40px;
         display: flex;
@@ -57,7 +58,12 @@ export default class BackBtn extends BaseComponent {
 
   addEventListener(): void {
     this.dom.addEventListener('click', () => {
-      history.back();
+      const previewIframe = document.getElementById(PREVIEW_IFRAME_ID);
+      if (previewIframe) {
+        previewIframe.remove();
+      } else {
+        history.back();
+      }
     });
   }
 
